@@ -1,0 +1,998 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kisah Kita — Lily & Komang</title>
+
+<!--
+  ====================================================================
+  PANDUAN EDIT CEPAT (baca ini dulu sebelum utak-atik)
+  ====================================================================
+  1. GANTI FOTO
+     Taruh foto kamu di folder yang sama dengan file HTML ini, lalu beri
+     nama persis: foto1.jpg, foto2.jpg, foto3.jpg, foto4.jpg, foto5.jpg
+     (boleh .png/.jpeg, tinggal sesuaikan ekstensi di tag <img> masing2).
+     Kalau file belum ada, akan muncul kotak "+ taruh foto di sini" —
+     itu normal, bukan error.
+
+  2. GANTI NAMA, TANGGAL JADIAN, DAN TEKS
+     Scroll ke bagian <script> paling bawah, cari objek CONFIG.
+     Semua nama, tanggal, judul surat, isi surat, caption foto,
+     dan judul lagu diatur dari sana.
+
+  3. GANTI LAGU (opsional)
+     Taruh file lagu.mp3 di folder yang sama untuk mengaktifkan
+     tombol play di bagian "Lagu Kita".
+  ====================================================================
+-->
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;0,900;1,600&family=Caveat:wght@500;600;700&family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --paper:#f3e8d3;
+  --paper-alt:#ece0c0;
+  --paper-deep:#e2d3ab;
+  --ink:#33251f;
+  --ink-soft:#5c443b;
+  --rose:#b23a48;
+  --rose-deep:#7a2430;
+  --gold:#a9803e;
+  --sage:#6f7d52;
+  --thread:#ad3b45;
+  --line: rgba(51,37,31,0.16);
+}
+
+*{margin:0;padding:0;box-sizing:border-box;}
+
+html{scroll-behavior:smooth;}
+
+body{
+  background:var(--paper);
+  color:var(--ink);
+  font-family:'Lora', serif;
+  overflow-x:hidden;
+  background-image:
+    radial-gradient(rgba(51,37,31,0.035) 1px, transparent 1px);
+  background-size: 4px 4px;
+}
+
+@media (prefers-reduced-motion: reduce){
+  *{animation-duration:0.01ms !important; animation-iteration-count:1 !important; transition-duration:0.01ms !important; scroll-behavior:auto !important;}
+}
+
+::selection{ background:var(--rose); color:var(--paper); }
+
+img{max-width:100%; display:block;}
+
+.eyebrow{
+  font-family:'JetBrains Mono', monospace;
+  font-size:0.72rem;
+  letter-spacing:0.22em;
+  text-transform:uppercase;
+  color:var(--rose-deep);
+  opacity:0.8;
+}
+
+h1,h2,h3{
+  font-family:'Playfair Display', serif;
+  font-weight:700;
+  line-height:1.1;
+  color:var(--ink);
+}
+
+/* ===================== COVER (JOURNAL) ===================== */
+#cover{
+  position:fixed;
+  inset:0;
+  z-index:100;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:
+    linear-gradient(135deg, var(--rose-deep), var(--rose) 55%, #8f2d38);
+  cursor:pointer;
+  transition: transform 1.1s cubic-bezier(.65,0,.35,1), opacity 0.9s ease 0.15s;
+  transform-origin: left center;
+  perspective:2000px;
+}
+#cover.opened{
+  transform: rotateY(-100deg);
+  opacity:0;
+  pointer-events:none;
+}
+.cover-inner{
+  text-align:center;
+  color:var(--paper);
+  padding:2rem;
+  position:relative;
+}
+.cover-frame{
+  border:1.5px solid rgba(243,232,211,0.55);
+  padding:3rem 2.6rem;
+  position:relative;
+}
+.cover-frame::before, .cover-frame::after{
+  content:"";
+  position:absolute;
+  width:26px;height:26px;
+  border:1.5px solid rgba(243,232,211,0.55);
+}
+.cover-frame::before{ top:-10px; left:-10px; border-right:none; border-bottom:none; }
+.cover-frame::after{ bottom:-10px; right:-10px; border-left:none; border-top:none; }
+
+.cover-eyebrow{
+  font-family:'JetBrains Mono', monospace;
+  letter-spacing:0.3em;
+  font-size:0.7rem;
+  text-transform:uppercase;
+  opacity:0.75;
+  margin-bottom:1.1rem;
+}
+.cover-title{
+  font-size:clamp(2.4rem, 7vw, 4.2rem);
+  font-style:italic;
+  font-weight:700;
+}
+.cover-names{
+  font-family:'Caveat', cursive;
+  font-size:clamp(1.6rem, 4vw, 2.3rem);
+  margin-top:0.6rem;
+  font-weight:600;
+}
+.cover-hint{
+  margin-top:2.4rem;
+  font-size:0.85rem;
+  letter-spacing:0.08em;
+  opacity:0.85;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:0.5rem;
+}
+.cover-hint .stamp{
+  width:9px;height:9px;
+  border-radius:50%;
+  background:var(--paper);
+  animation: pulseStamp 1.6s ease-in-out infinite;
+}
+@keyframes pulseStamp{
+  0%,100%{ transform:scale(1); opacity:0.9;}
+  50%{ transform:scale(1.5); opacity:0.4;}
+}
+
+/* ===================== HERO / COUNTER ===================== */
+.wrap{ max-width:1040px; margin:0 auto; padding:0 1.6rem; }
+
+#hero{
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  padding:6rem 1.6rem 4rem;
+  position:relative;
+}
+.hero-since{
+  font-family:'Caveat', cursive;
+  font-size:1.4rem;
+  color:var(--rose-deep);
+  margin-bottom:0.4rem;
+}
+.hero-title{
+  font-size:clamp(2.6rem, 8vw, 5rem);
+  font-style:italic;
+  margin-bottom:0.3rem;
+}
+.hero-sub{
+  font-family:'Lora', serif;
+  font-style:italic;
+  color:var(--ink-soft);
+  max-width:34ch;
+  margin:0.6rem auto 3rem;
+  font-size:1.05rem;
+}
+
+.counter{
+  display:flex;
+  gap:1.1rem;
+  flex-wrap:wrap;
+  justify-content:center;
+}
+.counter .unit{
+  background:var(--paper-alt);
+  border:1px solid var(--line);
+  box-shadow: 3px 4px 0 rgba(51,37,31,0.08);
+  padding:1.1rem 1.4rem;
+  min-width:88px;
+  border-radius:4px;
+  position:relative;
+}
+.counter .unit::after{
+  content:"";
+  position:absolute;
+  inset:5px;
+  border:1px dashed rgba(51,37,31,0.14);
+  pointer-events:none;
+}
+.counter .num{
+  font-family:'JetBrains Mono', monospace;
+  font-size:clamp(1.5rem,4vw,2.1rem);
+  font-weight:500;
+  color:var(--rose-deep);
+  font-variant-numeric: tabular-nums;
+}
+.counter .label{
+  font-family:'JetBrains Mono', monospace;
+  font-size:0.62rem;
+  letter-spacing:0.16em;
+  text-transform:uppercase;
+  color:var(--ink-soft);
+  margin-top:0.3rem;
+}
+
+.scroll-cue{
+  margin-top:3.4rem;
+  font-family:'JetBrains Mono', monospace;
+  font-size:0.68rem;
+  letter-spacing:0.2em;
+  text-transform:uppercase;
+  color:var(--ink-soft);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:0.5rem;
+  opacity:0.7;
+}
+.scroll-cue span{
+  width:1px; height:34px;
+  background:linear-gradient(var(--ink-soft), transparent);
+  animation: dropCue 1.8s ease-in-out infinite;
+}
+@keyframes dropCue{ 0%{transform:scaleY(0); transform-origin:top;} 50%{transform:scaleY(1); transform-origin:top;} 51%{transform-origin:bottom;} 100%{transform:scaleY(0); transform-origin:bottom;} }
+
+/* ===================== SECTION HEADERS ===================== */
+.section{ padding:6rem 0; position:relative; }
+.section-head{ text-align:center; margin-bottom:3.6rem; }
+.section-head h2{
+  font-size:clamp(1.9rem, 4.5vw, 2.8rem);
+  font-style:italic;
+  margin-top:0.5rem;
+}
+.torn-divider{
+  height:22px;
+  width:100%;
+  background:
+    linear-gradient(135deg, var(--paper) 25%, transparent 25%) 0 0,
+    linear-gradient(225deg, var(--paper) 25%, transparent 25%) 0 0;
+  background-size:16px 22px;
+  background-color:var(--paper-alt);
+}
+
+/* ===================== STORYBOARD / BENANG MERAH ===================== */
+#papan{
+  background:var(--paper-alt);
+  border-top:1px solid var(--line);
+  border-bottom:1px solid var(--line);
+}
+.thread-rail{
+  position:relative;
+  max-width:760px;
+  margin:0 auto;
+  padding-left:34px;
+}
+.thread-rail::before{
+  content:"";
+  position:absolute;
+  left:9px; top:6px; bottom:6px;
+  width:3px;
+  background: repeating-linear-gradient(180deg, var(--thread) 0 9px, #8c2d36 9px 11px);
+  border-radius:2px;
+  transform-origin:top;
+  transform:scaleY(0);
+  transition: transform 1.4s cubic-bezier(.22,1,.36,1);
+}
+.thread-rail.grown::before{ transform:scaleY(1); }
+
+.story-item{
+  position:relative;
+  margin-bottom:3.6rem;
+  opacity:0;
+  transform:translateY(26px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+.story-item.show{ opacity:1; transform:translateY(0); }
+
+.story-item .pin{
+  position:absolute;
+  left:-34px; top:14px;
+  width:19px; height:19px;
+  border-radius:50%;
+  background: radial-gradient(circle at 32% 30%, #f2c9c9, var(--rose) 55%, var(--rose-deep));
+  box-shadow: 0 2px 3px rgba(0,0,0,0.35);
+  z-index:3;
+}
+.story-item .pin::after{
+  content:"";
+  position:absolute;
+  left:50%; top:100%;
+  width:1px; height:16px;
+  background:var(--thread);
+  transform:translateX(-50%);
+}
+
+.polaroid{
+  background:#fbf6ea;
+  padding:0.7rem 0.7rem 2.2rem;
+  box-shadow: 0 10px 22px rgba(51,37,31,0.16), 0 1px 0 rgba(255,255,255,0.4) inset;
+  width:min(320px, 100%);
+  position:relative;
+  cursor:zoom-in;
+  transition: transform 0.35s ease, box-shadow 0.35s ease;
+}
+.story-item:nth-child(odd) .polaroid{ transform:rotate(-3.2deg); }
+.story-item:nth-child(even) .polaroid{ transform:rotate(2.6deg); margin-left:auto; }
+.polaroid:hover{ transform:rotate(0deg) scale(1.035); box-shadow:0 16px 30px rgba(51,37,31,0.22); }
+
+.polaroid .frame{
+  aspect-ratio: 4/5;
+  overflow:hidden;
+  background:var(--paper-deep);
+  position:relative;
+}
+.polaroid img{ width:100%; height:100%; object-fit:cover; }
+.polaroid .placeholder{
+  position:absolute; inset:0;
+  display:flex; align-items:center; justify-content:center;
+  flex-direction:column;
+  gap:0.4rem;
+  color:var(--ink-soft);
+  font-family:'JetBrains Mono', monospace;
+  font-size:0.68rem;
+  text-align:center;
+  padding:1rem;
+  background:
+   repeating-linear-gradient(45deg, rgba(51,37,31,0.05) 0 10px, transparent 10px 20px);
+}
+.polaroid .placeholder .plus{ font-size:1.6rem; font-family:'Lora',serif; color:var(--rose-deep); }
+
+.polaroid .washi{
+  position:absolute;
+  top:-12px; left:50%;
+  transform:translateX(-50%) rotate(-2deg);
+  width:78px; height:26px;
+  background: repeating-linear-gradient(135deg, rgba(178,58,72,0.55) 0 6px, rgba(178,58,72,0.35) 6px 12px);
+  opacity:0.85;
+}
+.polaroid .cap{
+  font-family:'Caveat', cursive;
+  font-size:1.25rem;
+  text-align:center;
+  padding-top:0.65rem;
+  color:var(--ink);
+}
+.polaroid .date{
+  font-family:'JetBrains Mono', monospace;
+  font-size:0.62rem;
+  letter-spacing:0.1em;
+  color:var(--rose-deep);
+  text-align:center;
+  text-transform:uppercase;
+}
+
+/* ===================== MOMEN FAVORIT (FLIP CARDS) ===================== */
+.memcards{
+  display:grid;
+  grid-template-columns:repeat(auto-fit, minmax(200px,1fr));
+  gap:1.4rem;
+  max-width:900px;
+  margin:0 auto;
+}
+.memcard{
+  perspective:1200px;
+  height:230px;
+}
+.memcard-inner{
+  position:relative; width:100%; height:100%;
+  transition: transform 0.7s cubic-bezier(.4,.2,.2,1);
+  transform-style:preserve-3d;
+}
+.memcard.flipped .memcard-inner{ transform:rotateY(180deg); }
+.memcard-face{
+  position:absolute; inset:0;
+  backface-visibility:hidden;
+  border-radius:6px;
+  padding:1.3rem;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  text-align:center;
+  cursor:pointer;
+}
+.memcard-front{
+  background:var(--paper-alt);
+  border:1px solid var(--line);
+  box-shadow:3px 4px 0 rgba(51,37,31,0.08);
+}
+.memcard-front .icon{ font-size:1.7rem; margin-bottom:0.6rem; }
+.memcard-front .t{ font-family:'Playfair Display', serif; font-style:italic; font-size:1.15rem; }
+.memcard-front .tap{ margin-top:0.7rem; font-family:'JetBrains Mono', monospace; font-size:0.6rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--rose-deep); opacity:0.75;}
+.memcard-back{
+  background:var(--rose-deep);
+  color:var(--paper);
+  transform:rotateY(180deg);
+  font-family:'Caveat', cursive;
+  font-size:1.25rem;
+  line-height:1.35;
+}
+
+/* ===================== SURAT CINTA ===================== */
+#surat{ background:var(--paper-alt); border-top:1px solid var(--line); }
+.envelope-wrap{
+  max-width:560px; margin:0 auto;
+  perspective:1600px;
+}
+.envelope{
+  position:relative;
+  background:#efe2c1;
+  border:1px solid var(--line);
+  box-shadow:0 12px 26px rgba(51,37,31,0.18);
+  padding:2.6rem 2rem 2rem;
+  cursor:pointer;
+  min-height:220px;
+}
+.envelope::before{
+  content:"";
+  position:absolute;
+  top:0; left:0; right:0; height:0;
+  border-left:280px solid transparent;
+  border-right:280px solid transparent;
+  border-top:120px solid #e4d3a8;
+  max-width:100%;
+}
+.envelope-seal{
+  width:52px; height:52px;
+  border-radius:50%;
+  background:radial-gradient(circle at 35% 30%, #d2606c, var(--rose) 55%, var(--rose-deep));
+  margin:0 auto;
+  display:flex; align-items:center; justify-content:center;
+  color:var(--paper);
+  font-family:'Playfair Display', serif;
+  font-style:italic;
+  box-shadow:0 4px 8px rgba(0,0,0,0.28);
+  position:relative; z-index:2;
+}
+.envelope-label{
+  text-align:center;
+  font-family:'Caveat', cursive;
+  font-size:1.3rem;
+  margin-top:1.1rem;
+  color:var(--ink-soft);
+}
+.envelope-hint{
+  text-align:center;
+  font-family:'JetBrains Mono', monospace;
+  font-size:0.62rem;
+  letter-spacing:0.14em;
+  text-transform:uppercase;
+  color:var(--rose-deep);
+  margin-top:0.9rem;
+  opacity:0.8;
+}
+
+.letter{
+  max-width:560px;
+  margin:1.6rem auto 0;
+  background:#fbf6ea;
+  border:1px solid var(--line);
+  box-shadow:0 14px 30px rgba(51,37,31,0.18);
+  padding:2.6rem 2.2rem;
+  font-family:'Caveat', cursive;
+  font-size:1.35rem;
+  line-height:1.6;
+  color:var(--ink);
+  max-height:0;
+  overflow:hidden;
+  opacity:0;
+  transition: max-height 0.9s ease, opacity 0.7s ease, padding 0.9s ease, margin 0.7s ease;
+}
+.letter.open{
+  max-height:900px;
+  opacity:1;
+}
+.letter .sign{
+  display:block;
+  text-align:right;
+  margin-top:1.6rem;
+  font-size:1.6rem;
+  color:var(--rose-deep);
+}
+
+/* ===================== LAGU KITA (VINYL) ===================== */
+#lagu{ text-align:center; }
+.vinyl-box{
+  display:flex; flex-direction:column; align-items:center; gap:1.3rem;
+}
+.vinyl{
+  width:170px; height:170px;
+  border-radius:50%;
+  background:
+    radial-gradient(circle at center, var(--paper-alt) 0 14px, #1c1a19 15px 16px, #2a2726 16px 100%);
+  box-shadow:0 10px 24px rgba(0,0,0,0.35);
+  position:relative;
+  animation: spin 6s linear infinite paused;
+}
+.vinyl::before{
+  content:"";
+  position:absolute; inset:0;
+  border-radius:50%;
+  background:
+    repeating-radial-gradient(circle at center, rgba(255,255,255,0.05) 0 2px, transparent 2px 6px);
+}
+.vinyl.playing{ animation-play-state:running; }
+@keyframes spin{ to{ transform:rotate(360deg); } }
+
+.song-title{
+  font-family:'Caveat', cursive;
+  font-size:1.5rem;
+  color:var(--rose-deep);
+}
+.playbtn{
+  font-family:'JetBrains Mono', monospace;
+  font-size:0.72rem;
+  letter-spacing:0.14em;
+  text-transform:uppercase;
+  background:var(--rose-deep);
+  color:var(--paper);
+  border:none;
+  padding:0.75rem 1.6rem;
+  border-radius:2px;
+  cursor:pointer;
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+.playbtn:hover{ transform:translateY(-2px); background:var(--rose); }
+.playbtn:active{ transform:translateY(0); }
+.audio-note{
+  font-family:'JetBrains Mono', monospace;
+  font-size:0.62rem;
+  color:var(--ink-soft);
+  opacity:0.7;
+  max-width:34ch;
+}
+
+/* ===================== CLOSING / SEGEL ===================== */
+#penutup{
+  background:linear-gradient(160deg, var(--rose-deep), var(--rose) 60%, #8f2d38);
+  color:var(--paper);
+  text-align:center;
+  padding:7rem 1.6rem;
+}
+#penutup .eyebrow{ color:rgba(243,232,211,0.75); }
+#penutup h2{ color:var(--paper); font-style:italic; margin:0.6rem 0 1.2rem; font-size:clamp(1.9rem,5vw,2.7rem); }
+#penutup p{ max-width:44ch; margin:0 auto 2.4rem; opacity:0.9; font-style:italic; }
+
+.seal-btn{
+  width:120px; height:120px;
+  border-radius:50%;
+  border:2px solid rgba(243,232,211,0.7);
+  background:transparent;
+  color:var(--paper);
+  font-family:'Playfair Display', serif;
+  font-style:italic;
+  font-size:1rem;
+  cursor:pointer;
+  transition: transform 0.35s ease, background 0.35s ease;
+  position:relative;
+}
+.seal-btn:hover{ background:rgba(243,232,211,0.12); transform:scale(1.05); }
+.seal-btn.sealed{
+  background:var(--paper);
+  color:var(--rose-deep);
+  transform:scale(1.12) rotate(-6deg);
+}
+
+.sealed-msg{
+  margin-top:1.6rem;
+  font-family:'Caveat', cursive;
+  font-size:1.8rem;
+  opacity:0;
+  transform:translateY(10px);
+  transition:opacity 0.6s ease, transform 0.6s ease;
+}
+.sealed-msg.show{ opacity:1; transform:translateY(0); }
+
+.heart{
+  position:fixed;
+  top:-30px;
+  font-size:1.1rem;
+  color:var(--paper);
+  pointer-events:none;
+  z-index:200;
+  animation: fall linear forwards;
+}
+@keyframes fall{
+  to{ transform: translateY(110vh) rotate(360deg); opacity:0; }
+}
+
+footer{
+  text-align:center;
+  padding:2.2rem 1rem;
+  font-family:'JetBrains Mono', monospace;
+  font-size:0.62rem;
+  letter-spacing:0.1em;
+  color:var(--paper);
+  background:var(--rose-deep);
+  opacity:0.75;
+}
+
+/* Lightbox */
+.lightbox{
+  position:fixed; inset:0;
+  background:rgba(28,20,17,0.88);
+  display:flex; align-items:center; justify-content:center;
+  z-index:300;
+  opacity:0; pointer-events:none;
+  transition:opacity 0.3s ease;
+  padding:2rem;
+}
+.lightbox.show{ opacity:1; pointer-events:auto; }
+.lightbox img{ max-width:min(560px,90vw); max-height:80vh; box-shadow:0 20px 50px rgba(0,0,0,0.5); }
+.lightbox .close-hint{
+  position:absolute; top:1.4rem; right:1.6rem;
+  color:var(--paper);
+  font-family:'JetBrains Mono', monospace;
+  font-size:0.7rem;
+  letter-spacing:0.1em;
+  cursor:pointer;
+}
+
+@media (max-width:560px){
+  .thread-rail{ padding-left:26px; }
+  .story-item .pin{ left:-26px; }
+  .cover-frame{ padding:2.2rem 1.4rem; }
+}
+</style>
+</head>
+<body>
+
+<!-- ===================== COVER ===================== -->
+<div id="cover">
+  <div class="cover-inner">
+    <div class="cover-frame">
+      <div class="cover-eyebrow">Buku Harian Kita</div>
+      <h1 class="cover-title">Kisah Kita</h1>
+      <div class="cover-names" id="coverNames">Lily &amp; Komang</div>
+      <div class="cover-hint"><span class="stamp"></span> ketuk untuk membuka</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== HERO ===================== -->
+<section id="hero">
+  <div class="hero-since" id="heroSince">sejak 25 Februari 2026</div>
+  <h1 class="hero-title">Lily &amp; Komang</h1>
+  <p class="hero-sub">Setiap detik yang lewat, cuma nambah satu alasan lagi buat aku makin sayang kamu.</p>
+
+  <div class="counter" id="counter">
+    <div class="unit"><div class="num" id="cDays">0000</div><div class="label">Hari</div></div>
+    <div class="unit"><div class="num" id="cHours">00</div><div class="label">Jam</div></div>
+    <div class="unit"><div class="num" id="cMins">00</div><div class="label">Menit</div></div>
+    <div class="unit"><div class="num" id="cSecs">00</div><div class="label">Detik</div></div>
+  </div>
+
+  <div class="scroll-cue"><span></span>gulir ke bawah</div>
+</section>
+
+<!-- ===================== PAPAN CERITA ===================== -->
+<section id="papan" class="section">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow">Papan Cerita</div>
+      <h2>Kisah LDR Kita WkWkWk</h2>
+    </div>
+
+    <div class="thread-rail" id="threadRail">
+
+      <div class="story-item">
+        <div class="pin"></div>
+        <div class="polaroid" data-full="foto1.jpg">
+          <div class="washi"></div>
+          <div class="frame">
+            <img src="foto1.jpg" alt="Pertama kali ketemu" onerror="this.style.display='none'; this.parentElement.querySelector('.placeholder').style.display='flex';">
+            <div class="placeholder" style="display:none;"><span class="plus">+</span>taruh foto1.jpg di sini</div>
+          </div>
+          <div class="cap">pertama kali foto bareng di roblox wkwk</div>
+          <div class="date">7 FEB 2026</div>
+        </div>
+      </div>
+
+      <div class="story-item">
+        <div class="pin"></div>
+        <div class="polaroid" data-full="foto2.jpg">
+          <div class="washi"></div>
+          <div class="frame">
+            <img src="foto2.jpg" alt="Kencan pertama" onerror="this.style.display='none'; this.parentElement.querySelector('.placeholder').style.display='flex';">
+            <div class="placeholder" style="display:none;"><span class="plus">+</span>taruh foto2.jpg di sini</div>
+          </div>
+          <div class="cap">pap pertama dari kamu hehe</div>
+          <div class="date">03 MAR 2026</div>
+        </div>
+      </div>
+
+      <div class="story-item">
+        <div class="pin"></div>
+        <div class="polaroid" data-full="foto3.jpg">
+          <div class="washi"></div>
+          <div class="frame">
+            <img src="foto3.jpg" alt="Momen jadian" onerror="this.style.display='none'; this.parentElement.querySelector('.placeholder').style.display='flex';">
+            <div class="placeholder" style="display:none;"><span class="plus">+</span>taruh foto3.jpg di sini</div>
+          </div>
+          <div class="cap">ditinggal seminggu liburan bareng keluarga dia sedihnyoo</div>
+          <div class="date">17 MAR 2022</div>
+        </div>
+      </div>
+
+      <div class="story-item">
+        <div class="pin"></div>
+        <div class="polaroid" data-full="foto4.jpg">
+          <div class="washi"></div>
+          <div class="frame">
+            <img src="foto4.jpg" alt="Liburan bersama" onerror="this.style.display='none'; this.parentElement.querySelector('.placeholder').style.display='flex';">
+            <div class="placeholder" style="display:none;"><span class="plus">+</span>taruh foto4.jpg di sini</div>
+          </div>
+          <div class="cap">karena ldr hanya bisa tukeran pap aja shibal</div>
+          <div class="date">29 JUN 2026</div>
+        </div>
+      </div>
+
+      <div class="story-item">
+        <div class="pin"></div>
+        <div class="polaroid" data-full="foto5.jpg">
+          <div class="washi"></div>
+          <div class="frame">
+            <img src="foto5.jpg" alt="Sekarang" onerror="this.style.display='none'; this.parentElement.querySelector('.placeholder').style.display='flex';">
+            <div class="placeholder" style="display:none;"><span class="plus">+</span>taruh foto5.jpg di sini</div>
+          </div>
+          <div class="cap">IMUT BANGET MY BINIII</div>
+          <div class="date">HARI INI</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<div class="torn-divider"></div>
+
+<!-- ===================== MOMEN FAVORIT ===================== -->
+<section id="momen" class="section">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow">Halaman Rahasia</div>
+      <h2>Momen Favoritku</h2>
+    </div>
+
+    <div class="memcards" id="memCards">
+      <div class="memcard">
+        <div class="memcard-inner">
+          <div class="memcard-face memcard-front"><div class="icon">☕</div><div class="t">Ngobrol lamaa</div><div class="tap">ketuk untuk baca</div></div>
+          <div class="memcard-face memcard-back">Waktu itu kita telfonan sampai lupa waktu, dan aku sadar aku nggak pernah nyaman ngobrol sama siapa pun seperti sama kamu.</div>
+        </div>
+      </div>
+      <div class="memcard">
+        <div class="memcard-inner">
+          <div class="memcard-face memcard-front"><div class="icon">🖼️</div><div class="t">Dikasih pap imut</div><div class="tap">ketuk untuk baca</div></div>
+          <div class="memcard-face memcard-back">Pokonya tiap kamu ngirim pap itu mood aku pasti langsung naik, ga pernah gagal emang</div>
+        </div>
+      </div>
+      <div class="memcard">
+        <div class="memcard-inner">
+          <div class="memcard-face memcard-front"><div class="icon">🎂</div><div class="t">Dapat hadiah habis sidang hehe</div><div class="tap">ketuk untuk baca</div></div>
+          <div class="memcard-face memcard-back">Kamu repot-repot nyiapin hadiah buat aku, aku senang pol.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="torn-divider"></div>
+
+<!-- ===================== SURAT CINTA ===================== -->
+<section id="surat" class="section">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow">Untuk Kamu</div>
+      <h2>Sepucuk Surat</h2>
+    </div>
+
+    <div class="envelope-wrap">
+      <div class="envelope" id="envelope">
+        <div class="envelope-seal">S</div>
+        <div class="envelope-label">dari aku, untuk kamu</div>
+        <div class="envelope-hint">ketuk amplop untuk membuka</div>
+      </div>
+
+      <div class="letter" id="letter">
+        Sayang,<br><br>
+        Aku nggak pernah pintar merangkai kata di depan kamu langsung, jadi aku tulis di sini saja.
+        Makasih ya, sudah sabar sama aku walau sering buat kamu sedih terus, sudah tetap tinggal di hari-hari aku yang nggak selalu baik.
+        Aku nggak tahu masa depan bakal seperti apa, tapi aku tahu aku mau kamu ada di setiap babnya.
+        Selamat anniversary, cinta. Ini baru satu bab dari banyak bab lain yang mau kita tulis bareng-bareng.
+        <span class="sign">— aku, yang selalu milih kamu</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== LAGU KITA ===================== -->
+<section id="lagu" class="section">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow">Soundtrack Kita</div>
+      <h2>Lagu Kita</h2>
+    </div>
+
+    <div class="vinyl-box">
+      <div class="vinyl" id="vinyl"></div>
+      <div class="song-title" id="songTitle">"Perfect" — Ed Sheeran</div>
+      <button class="playbtn" id="playBtn">▶ putar</button>
+      <!-- <div class="audio-note">taruh file lagu.mp3 di folder yang sama untuk mengaktifkan audio sungguhan</div> -->
+      <audio id="audio" src="lagu.mp3" loop></audio>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== PENUTUP ===================== -->
+<section id="penutup">
+  <div class="eyebrow">Halaman Terakhir (untuk sekarang)</div>
+  <h2>Aku sayang kamu, sebanyak ini.</h2>
+  <p>Klik segel di bawah ini buat ngirim satu pelukan virtual dariku.</p>
+  <button class="seal-btn" id="sealBtn">segel</button>
+  <div class="sealed-msg" id="sealedMsg">tersegel dengan sayang 🤍</div>
+</section>
+
+<footer>dibuat dengan sabar, satu baris kode dan satu kenangan sekaligus</footer>
+
+<!-- Lightbox -->
+<div class="lightbox" id="lightbox">
+  <div class="close-hint">tutup ✕</div>
+  <img id="lightboxImg" src="" alt="">
+</div>
+
+<script>
+/* ==================================================================
+   CONFIG — edit bagian ini untuk personalisasi
+   ================================================================== */
+const CONFIG = {
+  // Tanggal jadian, format: TAHUN, BULAN-1 (0=Jan), TANGGAL, JAM, MENIT
+  startDate: new Date(2026, 2, 25, 0, 0),
+};
+
+/* ===================== COVER ===================== */
+const cover = document.getElementById('cover');
+cover.addEventListener('click', () => {
+  cover.classList.add('opened');
+  document.body.style.overflow = 'auto';
+}, { once:true });
+
+/* ===================== LIVE COUNTER ===================== */
+function updateCounter(){
+  const now = new Date();
+  let diff = now - CONFIG.startDate;
+  if(diff < 0) diff = 0;
+
+  const days = Math.floor(diff / (1000*60*60*24));
+  const hours = Math.floor((diff / (1000*60*60)) % 24);
+  const mins = Math.floor((diff / (1000*60)) % 60);
+  const secs = Math.floor((diff / 1000) % 60);
+
+  document.getElementById('cDays').textContent = String(days).padStart(4,'0');
+  document.getElementById('cHours').textContent = String(hours).padStart(2,'0');
+  document.getElementById('cMins').textContent = String(mins).padStart(2,'0');
+  document.getElementById('cSecs').textContent = String(secs).padStart(2,'0');
+}
+updateCounter();
+setInterval(updateCounter, 1000);
+
+/* ===================== SCROLL REVEAL: STORYBOARD ===================== */
+const rail = document.getElementById('threadRail');
+const items = document.querySelectorAll('.story-item');
+
+const railObserver = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if(e.isIntersecting){ rail.classList.add('grown'); }
+  });
+}, { threshold:0.1 });
+railObserver.observe(rail);
+
+const itemObserver = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if(e.isIntersecting){
+      e.target.classList.add('show');
+      itemObserver.unobserve(e.target);
+    }
+  });
+}, { threshold:0.25 });
+items.forEach(i => itemObserver.observe(i));
+
+/* ===================== LIGHTBOX ===================== */
+const lightbox = document.getElementById('lightbox');
+const lightboxImg = document.getElementById('lightboxImg');
+document.querySelectorAll('.polaroid').forEach(p => {
+  p.addEventListener('click', () => {
+    const img = p.querySelector('img');
+    if(img && img.style.display !== 'none'){
+      lightboxImg.src = img.src;
+      lightbox.classList.add('show');
+    }
+  });
+});
+lightbox.addEventListener('click', () => lightbox.classList.remove('show'));
+
+/* ===================== FLIP CARDS ===================== */
+document.querySelectorAll('.memcard').forEach(card => {
+  card.addEventListener('click', () => card.classList.toggle('flipped'));
+});
+
+/* ===================== SURAT / ENVELOPE ===================== */
+const envelope = document.getElementById('envelope');
+const letter = document.getElementById('letter');
+envelope.addEventListener('click', () => {
+  letter.classList.toggle('open');
+});
+
+/* ===================== VINYL / LAGU ===================== */
+const vinyl = document.getElementById('vinyl');
+const playBtn = document.getElementById('playBtn');
+const audio = document.getElementById('audio');
+let playing = false;
+
+playBtn.addEventListener('click', () => {
+  playing = !playing;
+  vinyl.classList.toggle('playing', playing);
+  playBtn.textContent = playing ? '❚❚ jeda' : '▶ putar';
+  if(playing){
+    audio.play().catch(()=>{ /* file lagu.mp3 belum ada, animasi tetap jalan */ });
+  } else {
+    audio.pause();
+  }
+});
+
+/* ===================== SEGEL PENUTUP ===================== */
+const sealBtn = document.getElementById('sealBtn');
+const sealedMsg = document.getElementById('sealedMsg');
+let sealed = false;
+
+sealBtn.addEventListener('click', () => {
+  if(sealed) return;
+  sealed = true;
+  sealBtn.classList.add('sealed');
+  sealBtn.textContent = '♥';
+  sealedMsg.classList.add('show');
+  spawnHearts();
+});
+
+function spawnHearts(){
+  const symbols = ['♥','❤','♥'];
+  for(let i=0;i<26;i++){
+    setTimeout(() => {
+      const h = document.createElement('div');
+      h.className = 'heart';
+      h.textContent = symbols[Math.floor(Math.random()*symbols.length)];
+      h.style.left = Math.random()*100 + 'vw';
+      h.style.fontSize = (0.8 + Math.random()*1.2) + 'rem';
+      h.style.animationDuration = (2.5 + Math.random()*2) + 's';
+      h.style.opacity = 0.6 + Math.random()*0.4;
+      document.body.appendChild(h);
+      setTimeout(() => h.remove(), 5000);
+    }, i * 60);
+  }
+}
+</script>
+</body>
+</html>
