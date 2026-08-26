@@ -24,6 +24,11 @@
   3. GANTI LAGU (opsional)
      Taruh file lagu.mp3 di folder yang sama untuk mengaktifkan
      tombol play di bagian "Lagu Kita".
+
+  4. KAPSUL WAKTU BULANAN (menu rahasia)
+     Cari objek CAPSULES di <script> paling bawah. Setiap bulan di
+     tanggal jadian (tanggal 25), tambahkan satu objek baru ke array
+     itu supaya laci baru otomatis muncul & terbuka pas harinya.
   ====================================================================
 -->
 
@@ -565,6 +570,174 @@ h1,h2,h3{
   max-width:34ch;
 }
 
+/* ===================== KAPSUL WAKTU (LACI RAHASIA) ===================== */
+#kapsul{ background:var(--paper-alt); border-top:1px solid var(--line); border-bottom:1px solid var(--line); }
+.drawer-row{
+  display:flex;
+  flex-wrap:wrap;
+  gap:1.2rem;
+  justify-content:center;
+  max-width:820px;
+  margin:0 auto;
+}
+.drawer{
+  width:150px;
+  background:#e9dab5;
+  border:1px solid var(--line);
+  box-shadow: 0 6px 0 #cdb98a, 0 8px 14px rgba(51,37,31,0.18);
+  padding:1.2rem 1rem 1.4rem;
+  text-align:center;
+  cursor:pointer;
+  position:relative;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+.drawer:hover{ transform:translateY(-4px); box-shadow: 0 10px 0 #cdb98a, 0 14px 20px rgba(51,37,31,0.22); }
+.drawer .handle{
+  width:30px; height:30px;
+  border-radius:50%;
+  margin:0 auto 0.7rem;
+  background: radial-gradient(circle at 35% 30%, #f2c9c9, var(--rose) 55%, var(--rose-deep));
+  box-shadow: 0 2px 3px rgba(0,0,0,0.3);
+  display:flex; align-items:center; justify-content:center;
+  color:var(--paper);
+  font-family:'JetBrains Mono', monospace;
+  font-size:0.68rem;
+}
+.drawer .title{
+  font-family:'Caveat', cursive;
+  font-size:1.15rem;
+  color:var(--ink);
+}
+.drawer .sub{
+  font-family:'JetBrains Mono', monospace;
+  font-size:0.58rem;
+  letter-spacing:0.08em;
+  text-transform:uppercase;
+  color:var(--rose-deep);
+  margin-top:0.35rem;
+}
+.drawer.locked{
+  cursor:default;
+  opacity:0.55;
+  background:repeating-linear-gradient(135deg, #e9dab5 0 8px, #dfcda2 8px 16px);
+}
+.drawer.locked:hover{ transform:none; box-shadow: 0 6px 0 #cdb98a, 0 8px 14px rgba(51,37,31,0.18); }
+.drawer.locked .handle{
+  background: radial-gradient(circle at 35% 30%, #cabf9d, #9a8c66 55%, #7c7051);
+}
+.drawer.locked .sub{ color:var(--ink-soft); }
+.drawer.new::after{
+  content:"baru";
+  position:absolute;
+  top:-9px; right:-9px;
+  background:var(--rose-deep);
+  color:var(--paper);
+  font-family:'JetBrains Mono', monospace;
+  font-size:0.56rem;
+  letter-spacing:0.08em;
+  text-transform:uppercase;
+  padding:0.25rem 0.5rem;
+  border-radius:2px;
+  transform:rotate(6deg);
+}
+
+.capsule-modal{
+  position:fixed; inset:0;
+  background:rgba(28,20,17,0.82);
+  z-index:300;
+  display:flex; align-items:center; justify-content:center;
+  padding:1.6rem;
+  opacity:0; pointer-events:none;
+  transition:opacity 0.35s ease;
+}
+.capsule-modal.show{ opacity:1; pointer-events:auto; }
+.capsule-card{
+  background:#fbf6ea;
+  max-width:520px; width:100%;
+  max-height:88vh;
+  overflow-y:auto;
+  padding:2.2rem 1.8rem 1.8rem;
+  position:relative;
+  box-shadow:0 20px 50px rgba(0,0,0,0.4);
+  transform:translateY(16px) scale(0.97);
+  transition: transform 0.35s ease;
+}
+.capsule-modal.show .capsule-card{ transform:translateY(0) scale(1); }
+.capsule-close{
+  position:absolute; top:1rem; right:1.2rem;
+  font-family:'JetBrains Mono', monospace;
+  font-size:0.68rem;
+  letter-spacing:0.1em;
+  color:var(--ink-soft);
+  cursor:pointer;
+}
+.capsule-label{
+  font-family:'Playfair Display', serif;
+  font-style:italic;
+  font-size:1.5rem;
+  text-align:center;
+  margin-bottom:1.2rem;
+  color:var(--rose-deep);
+}
+.capsule-video{
+  width:100%;
+  background:#1c1a19;
+  display:block;
+  border:6px solid #fff;
+  box-shadow:0 8px 18px rgba(51,37,31,0.25);
+}
+.capsule-video-empty{
+  display:none;
+  aspect-ratio:16/10;
+  align-items:center; justify-content:center;
+  flex-direction:column;
+  gap:0.5rem;
+  border:6px solid #fff;
+  background:repeating-linear-gradient(45deg, rgba(51,37,31,0.06) 0 10px, transparent 10px 20px);
+  color:var(--ink-soft);
+  font-family:'JetBrains Mono', monospace;
+  font-size:0.68rem;
+  text-align:center;
+  padding:1rem;
+}
+.capsule-video-empty .plus{ font-size:1.6rem; font-family:'Lora',serif; color:var(--rose-deep); }
+
+.capsule-notes{
+  margin-top:1.4rem;
+  background:var(--paper-alt);
+  border:1px solid var(--line);
+  padding:1.4rem 1.2rem;
+  min-height:90px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  font-family:'Caveat', cursive;
+  font-size:1.35rem;
+  line-height:1.4;
+  color:var(--ink);
+  transform:rotate(-0.6deg);
+}
+.capsule-nav{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-top:1rem;
+  font-family:'JetBrains Mono', monospace;
+  font-size:0.64rem;
+  letter-spacing:0.06em;
+  text-transform:uppercase;
+  color:var(--rose-deep);
+}
+.capsule-nav button{
+  background:none; border:none;
+  font-family:inherit; font-size:inherit; letter-spacing:inherit; text-transform:inherit;
+  color:var(--rose-deep);
+  cursor:pointer;
+  padding:0.4rem 0.2rem;
+}
+.capsule-nav button:hover{ text-decoration:underline; }
+
 /* ===================== CLOSING / SEGEL ===================== */
 #penutup{
   background:linear-gradient(160deg, var(--rose-deep), var(--rose) 60%, #8f2d38);
@@ -733,7 +906,7 @@ footer{
             <div class="placeholder" style="display:none;"><span class="plus">+</span>taruh foto3.jpg di sini</div>
           </div>
           <div class="cap">ditinggal seminggu liburan bareng keluarga dia sedihnyoo</div>
-          <div class="date">17 MAR 2026</div>
+          <div class="date">17 MAR 2022</div>
         </div>
       </div>
 
@@ -839,11 +1012,21 @@ footer{
 
     <div class="vinyl-box">
       <div class="vinyl" id="vinyl"></div>
-      <div class="song-title" id="songTitle">"Photograph" — Ed Sheeran</div>
+      <div class="song-title" id="songTitle">"Perfect" — Ed Sheeran</div>
       <button class="playbtn" id="playBtn">▶ putar</button>
-      <!-- <div class="audio-note">taruh file lagu.mp3 di folder yang sama untuk mengaktifkan audio sungguhan</div> -->
       <audio id="audio" src="lagu.mp3" loop></audio>
     </div>
+  </div>
+</section>
+
+<!-- ===================== KAPSUL WAKTU (LACI RAHASIA) ===================== -->
+<section id="kapsul" class="section">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow">Laci Rahasia</div>
+      <h2>Kapsul Waktu Kita</h2>
+    </div>
+    <div class="drawer-row" id="drawerRow"></div>
   </div>
 </section>
 
@@ -856,12 +1039,28 @@ footer{
   <div class="sealed-msg" id="sealedMsg">tersegel dengan sayang 🤍</div>
 </section>
 
-<footer>untuk my pacar gueh</footer>
+<footer>dibuat dengan sabar, satu baris kode dan satu kenangan sekaligus</footer>
 
 <!-- Lightbox -->
 <div class="lightbox" id="lightbox">
   <div class="close-hint">tutup ✕</div>
   <img id="lightboxImg" src="" alt="">
+</div>
+
+<!-- Modal Kapsul Waktu -->
+<div class="capsule-modal" id="capsuleModal">
+  <div class="capsule-card">
+    <div class="capsule-close" id="capsuleClose">tutup ✕</div>
+    <div class="capsule-label" id="capsuleLabel"></div>
+    <video class="capsule-video" id="capsuleVideo" controls playsinline></video>
+    <div class="capsule-video-empty" id="capsuleVideoEmpty"><span class="plus">+</span>taruh video di sini</div>
+    <div class="capsule-notes" id="capsuleNotes"></div>
+    <div class="capsule-nav">
+      <button id="noteBack">‹ pesan sebelumnya</button>
+      <span id="noteIndex">1/1</span>
+      <button id="noteNext">pesan berikutnya ›</button>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -870,8 +1069,41 @@ footer{
    ================================================================== */
 const CONFIG = {
   // Tanggal jadian, format: TAHUN, BULAN-1 (0=Jan), TANGGAL, JAM, MENIT
+  // 25 Februari 2026 -> bulan Februari = index 1
   startDate: new Date(2026, 1, 25, 0, 0),
 };
+
+/* ==================================================================
+   KAPSUL WAKTU BULANAN — tambahkan objek baru tiap bulan jadian (tgl 25)
+   Laci akan otomatis TERKUNCI kalau tanggalnya belum sampai, dan
+   otomatis TERBUKA (bisa diklik) begitu tanggalnya tiba, tanpa perlu
+   ubah kode lain. Tinggal copy-paste satu blok, ganti isinya.
+   ================================================================== */
+const CAPSULES = [
+  {
+    id: 'agu2026',
+    title: '6 Bulan Bersama',
+    date: new Date(2026, 7, 25, 0, 0), // 25 Agustus 2026 (bulan Agustus = index 7)
+    video: 'video-agustus.mp4',
+    messages: [
+      'Enam bulan udah kelewat, dan rasanya masih kaya baru kemarin kamu pertama kali bales chat aku.',
+      'Makasih ya udah tahan sama aku yang kadang ribet, kadang bawel, tapi selalu sayang kamu.',
+      'LDR emang capek, tapi tiap video call sama kamu tuh kaya charger buat semangat aku seminggu ke depan.'
+    ]
+  },
+  // ============ TAMBAH BULAN BERIKUTNYA DI SINI ============
+  // Contoh untuk 7 bulan (25 September 2026):
+  // {
+  //   id: 'sep2026',
+  //   title: '7 Bulan Bersama',
+  //   date: new Date(2026, 8, 25, 0, 0),
+  //   video: 'video-september.mp4',
+  //   messages: [
+  //     'pesan singkat pertama...',
+  //     'pesan singkat kedua...'
+  //   ]
+  // },
+];
 
 /* ===================== COVER ===================== */
 const cover = document.getElementById('cover');
@@ -962,6 +1194,102 @@ playBtn.addEventListener('click', () => {
     audio.pause();
   }
 });
+
+/* ===================== KAPSUL WAKTU ===================== */
+const drawerRow = document.getElementById('drawerRow');
+const capsuleModal = document.getElementById('capsuleModal');
+const capsuleClose = document.getElementById('capsuleClose');
+const capsuleLabel = document.getElementById('capsuleLabel');
+const capsuleVideo = document.getElementById('capsuleVideo');
+const capsuleVideoEmpty = document.getElementById('capsuleVideoEmpty');
+const capsuleNotes = document.getElementById('capsuleNotes');
+const noteIndexEl = document.getElementById('noteIndex');
+const noteBack = document.getElementById('noteBack');
+const noteNext = document.getElementById('noteNext');
+
+let currentCapsule = null;
+let currentNoteIdx = 0;
+
+function fmtDate(d){
+  const bulan = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+  return d.getDate() + ' ' + bulan[d.getMonth()] + ' ' + d.getFullYear();
+}
+
+function renderDrawers(){
+  const now = new Date();
+  drawerRow.innerHTML = '';
+
+  const sorted = [...CAPSULES].sort((a,b) => a.date - b.date);
+
+  sorted.forEach(cap => {
+    const unlocked = now >= cap.date;
+    const isRecentlyUnlocked = unlocked && (now - cap.date) < (1000*60*60*24*3); // baru terbuka < 3 hari
+
+    const el = document.createElement('div');
+    el.className = 'drawer' + (unlocked ? '' : ' locked') + (isRecentlyUnlocked ? ' new' : '');
+    el.innerHTML = `
+      <div class="handle">${unlocked ? '✦' : '✕'}</div>
+      <div class="title">${cap.title}</div>
+      <div class="sub">${unlocked ? fmtDate(cap.date) : 'terbuka ' + fmtDate(cap.date)}</div>
+    `;
+
+    if(unlocked){
+      el.addEventListener('click', () => openCapsule(cap));
+    }
+
+    drawerRow.appendChild(el);
+  });
+}
+
+function openCapsule(cap){
+  currentCapsule = cap;
+  currentNoteIdx = 0;
+  capsuleLabel.textContent = cap.title;
+
+  capsuleVideo.src = cap.video;
+  capsuleVideo.style.display = 'block';
+  capsuleVideoEmpty.style.display = 'none';
+  capsuleVideo.onerror = () => {
+    capsuleVideo.style.display = 'none';
+    capsuleVideoEmpty.style.display = 'flex';
+  };
+
+  showNote();
+  capsuleModal.classList.add('show');
+}
+
+function showNote(){
+  const msgs = currentCapsule.messages || [];
+  capsuleNotes.textContent = msgs[currentNoteIdx] || '';
+  noteIndexEl.textContent = (currentNoteIdx+1) + '/' + msgs.length;
+}
+
+noteBack.addEventListener('click', () => {
+  if(!currentCapsule) return;
+  const len = currentCapsule.messages.length;
+  currentNoteIdx = (currentNoteIdx - 1 + len) % len;
+  showNote();
+});
+noteNext.addEventListener('click', () => {
+  if(!currentCapsule) return;
+  const len = currentCapsule.messages.length;
+  currentNoteIdx = (currentNoteIdx + 1) % len;
+  showNote();
+});
+
+capsuleClose.addEventListener('click', () => {
+  capsuleModal.classList.remove('show');
+  capsuleVideo.pause();
+});
+capsuleModal.addEventListener('click', (e) => {
+  if(e.target === capsuleModal){
+    capsuleModal.classList.remove('show');
+    capsuleVideo.pause();
+  }
+});
+
+renderDrawers();
+setInterval(renderDrawers, 60000); // cek tiap menit, biar laci baru otomatis kebuka pas harinya
 
 /* ===================== SEGEL PENUTUP ===================== */
 const sealBtn = document.getElementById('sealBtn');
