@@ -29,6 +29,8 @@
      Cari objek CAPSULES di <script> paling bawah. Setiap bulan di
      tanggal jadian (tanggal 25), tambahkan satu objek baru ke array
      itu supaya laci baru otomatis muncul & terbuka pas harinya.
+     Ada 2 jenis isi laci: pakai video + pesan singkat, atau pakai
+     surat (lihat contoh di CAPSULES).
   ====================================================================
 -->
 
@@ -718,6 +720,23 @@ h1,h2,h3{
   color:var(--ink);
   transform:rotate(-0.6deg);
 }
+.capsule-letter{
+  display:none;
+  font-family:'Caveat', cursive;
+  font-size:1.32rem;
+  line-height:30px;
+  color:var(--ink);
+  padding:0.2rem 0.4rem 0.4rem;
+  background:repeating-linear-gradient(180deg, transparent 0 29px, rgba(51,37,31,0.12) 29px 30px);
+}
+.capsule-letter p{ margin-bottom:30px; }
+.capsule-letter .greet{ color:var(--rose-deep); }
+.capsule-letter .sign{
+  text-align:right;
+  color:var(--rose-deep);
+  font-size:1.5rem;
+  margin-bottom:0;
+}
 .capsule-nav{
   display:flex;
   align-items:center;
@@ -906,7 +925,7 @@ footer{
             <div class="placeholder" style="display:none;"><span class="plus">+</span>taruh foto3.jpg di sini</div>
           </div>
           <div class="cap">ditinggal seminggu liburan bareng keluarga dia sedihnyoo</div>
-          <div class="date">17 MAR 2022</div>
+          <div class="date">17 MAR 2026</div>
         </div>
       </div>
 
@@ -1055,7 +1074,8 @@ footer{
     <video class="capsule-video" id="capsuleVideo" controls playsinline></video>
     <div class="capsule-video-empty" id="capsuleVideoEmpty"><span class="plus">+</span>taruh video di sini</div>
     <div class="capsule-notes" id="capsuleNotes"></div>
-    <div class="capsule-nav">
+    <div class="capsule-letter" id="capsuleLetter"></div>
+    <div class="capsule-nav" id="capsuleNav">
       <button id="noteBack">‹ pesan sebelumnya</button>
       <span id="noteIndex">1/1</span>
       <button id="noteNext">pesan berikutnya ›</button>
@@ -1078,6 +1098,10 @@ const CONFIG = {
    Laci akan otomatis TERKUNCI kalau tanggalnya belum sampai, dan
    otomatis TERBUKA (bisa diklik) begitu tanggalnya tiba, tanpa perlu
    ubah kode lain. Tinggal copy-paste satu blok, ganti isinya.
+
+   Ada 2 jenis isi:
+   - VIDEO + PESAN : isi `video` dan `messages` (lihat 6 bulan)
+   - SURAT         : isi `letter` (lihat 8 bulan), tanpa video
    ================================================================== */
 const CAPSULES = [
   {
@@ -1088,16 +1112,32 @@ const CAPSULES = [
     messages: [
       'Enam bulan udah kelewat, dan rasanya masih kaya baru kemarin kamu pertama kali bales chat aku.',
       'Makasih ya udah tahan sama aku yang kadang ribet, kadang bawel, tapi selalu sayang kamu.',
-      'LDR emang capek, tapi tiap dapat kabar atau call sama kamu tuh kaya charger buat semangat aku jalanain sehari hari.'
+      'LDR emang capek, tapi tiap video call sama kamu tuh kaya charger buat semangat aku seminggu ke depan.'
     ]
   },
+  {
+    id: 'okt2026',
+    title: '8 Bulan Bersama',
+    date: new Date(2026, 9, 25, 0, 0), // 25 Oktober 2026 (bulan Oktober = index 9)
+    letter: {
+      greeting: 'Ade,',
+      paragraphs: [
+        'Surat ini sengaja aku buat untuk kamu, karena aku merasa bersalah ke kamu',
+        'Dari saat aku lupa tanggal anniv kita (walaupun ade jg lupa sih wkwk), tapi tetep aja aku merasa bersalah ninggalin kamu main keluar sama temen',
+        'Terus esok harinya kamu sakit dan masuk RS, tapi di hari yang sama juga aku ada janjian sama temen buat main badmin diluar, lalu kamu hanya pengen minta videoin pas aku main tapi aku nolak terus, aku sadar aku salah, kenapa ga aku iyain aja langsung supaya ade nya seneng',
+        'Terus ade malah nyuruh sebutin sifat minus dari masing-masing diri kita sendiri dan ga boleh tersinggung sama jawaban nya nanti, karena harus jujur. Tapi aku malah milih kata yang ga enak dan terdengar kasar sampai buat kamu nangis, tapi disitu aku ga merasa bersalah karena kan emang harus jujur. Aku baru sadar ketika perjalanan pulang sehabis main badmin tadi',
+        'Aku merasa apa yang barusan kulakukan ke ade itu salah besar, rasa bersalah terus muncul di hati aku, sampe aku langsung nge chat kamu buat minta maaf dengan semaaf maafnya, tapi reaksi kamu seperti biasa aja. Tapi aku tau sebelumnya kamu nangis karena ketikan aku yang kasar itu, aku takut nge lukain hati kamu yang rapuh itu dan malah buat perasaan sayang kamu ke aku berkurang. Aku harap ade bisa maafin kebodohan aku ini, aku bakal usaha buat ga ngelakuinnya lagi, kalo aku lakuin kesalahan lagi tolong ingetin aku, marahin aku atau apapun itu, jangan dipendam karena aku ga mau ade jadi sedih nantinya. Yah itu aja isi dari surat ini, Happy Anniversary yang ke 8 bulan sayangku, aku bakal selalu sayang sama kamu terus ❤'
+      ],
+      sign: '— Abang'
+    }
+  },
   // ============ TAMBAH BULAN BERIKUTNYA DI SINI ============
-  // Contoh untuk 7 bulan (25 September 2026):
+  // Contoh untuk 9 bulan (25 November 2026), versi video + pesan:
   // {
-  //   id: 'sep2026',
-  //   title: '7 Bulan Bersama',
-  //   date: new Date(2026, 8, 25, 0, 0),
-  //   video: 'video-september.mp4',
+  //   id: 'nov2026',
+  //   title: '9 Bulan Bersama',
+  //   date: new Date(2026, 10, 25, 0, 0),
+  //   video: 'video-november.mp4',
   //   messages: [
   //     'pesan singkat pertama...',
   //     'pesan singkat kedua...'
@@ -1203,6 +1243,8 @@ const capsuleLabel = document.getElementById('capsuleLabel');
 const capsuleVideo = document.getElementById('capsuleVideo');
 const capsuleVideoEmpty = document.getElementById('capsuleVideoEmpty');
 const capsuleNotes = document.getElementById('capsuleNotes');
+const capsuleLetter = document.getElementById('capsuleLetter');
+const capsuleNav = document.getElementById('capsuleNav');
 const noteIndexEl = document.getElementById('noteIndex');
 const noteBack = document.getElementById('noteBack');
 const noteNext = document.getElementById('noteNext');
@@ -1241,20 +1283,53 @@ function renderDrawers(){
   });
 }
 
+function renderLetter(l){
+  capsuleLetter.innerHTML = '';
+  const g = document.createElement('p');
+  g.className = 'greet';
+  g.textContent = l.greeting || '';
+  capsuleLetter.appendChild(g);
+  (l.paragraphs || []).forEach(t => {
+    const p = document.createElement('p');
+    p.textContent = t;
+    capsuleLetter.appendChild(p);
+  });
+  const s = document.createElement('p');
+  s.className = 'sign';
+  s.textContent = l.sign || '';
+  capsuleLetter.appendChild(s);
+}
+
 function openCapsule(cap){
   currentCapsule = cap;
   currentNoteIdx = 0;
   capsuleLabel.textContent = cap.title;
 
-  capsuleVideo.src = cap.video;
-  capsuleVideo.style.display = 'block';
-  capsuleVideoEmpty.style.display = 'none';
-  capsuleVideo.onerror = () => {
+  if(cap.letter){
+    // mode surat: tanpa video & tanpa navigasi pesan
+    capsuleVideo.pause();
+    capsuleVideo.removeAttribute('src');
     capsuleVideo.style.display = 'none';
-    capsuleVideoEmpty.style.display = 'flex';
-  };
+    capsuleVideoEmpty.style.display = 'none';
+    capsuleNotes.style.display = 'none';
+    capsuleNav.style.display = 'none';
+    renderLetter(cap.letter);
+    capsuleLetter.style.display = 'block';
+  } else {
+    // mode video + pesan singkat
+    capsuleLetter.style.display = 'none';
+    capsuleNotes.style.display = 'flex';
+    capsuleNav.style.display = 'flex';
+    capsuleVideo.src = cap.video;
+    capsuleVideo.style.display = 'block';
+    capsuleVideoEmpty.style.display = 'none';
+    capsuleVideo.onerror = () => {
+      capsuleVideo.style.display = 'none';
+      capsuleVideoEmpty.style.display = 'flex';
+    };
+    showNote();
+  }
 
-  showNote();
   capsuleModal.classList.add('show');
 }
 
@@ -1265,13 +1340,13 @@ function showNote(){
 }
 
 noteBack.addEventListener('click', () => {
-  if(!currentCapsule) return;
+  if(!currentCapsule || !currentCapsule.messages) return;
   const len = currentCapsule.messages.length;
   currentNoteIdx = (currentNoteIdx - 1 + len) % len;
   showNote();
 });
 noteNext.addEventListener('click', () => {
-  if(!currentCapsule) return;
+  if(!currentCapsule || !currentCapsule.messages) return;
   const len = currentCapsule.messages.length;
   currentNoteIdx = (currentNoteIdx + 1) % len;
   showNote();
